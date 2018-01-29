@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/forms-1.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/substance-7.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/laf-widget-7.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/trident-7.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/laf-plugin-7.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-barcodes-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-forms-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-hyph-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-io-7.0.4.jar" sourcepath="C:/Projekty/RaceManagement/project/itext7-io-7.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-kernel-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-layout-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-pdfa-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-pdftest-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-sign-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-font-asian-7.0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/itext7-io-7.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="C:/Projekty/RaceManagement/project/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
