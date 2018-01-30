@@ -1,15 +1,12 @@
 package cz.pluto.tool;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.text.Collator;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.font.PdfEncodings;
@@ -36,7 +33,7 @@ import cz.pluto.data.Race;
 
 public class PdfTool {
     
-    public static String toUTF8(String in) throws UnsupportedEncodingException {
+    public static String toUTF8(String in) {
         byte[] byteText = in.getBytes(Charset.forName("UTF-8"));
         return new String(byteText, Charset.forName("UTF-8"));
     }
@@ -44,7 +41,7 @@ public class PdfTool {
    
     public static void createRaceList(Race race, String destination) throws IOException {
         if (destination.endsWith(".xml")) {
-            int lastInd = destination.lastIndexOf("\\");
+            int lastInd = destination.lastIndexOf('\\');
             destination = destination.substring(0, lastInd);
         }
         destination = destination+"\\startovka.pdf";
@@ -69,7 +66,7 @@ public class PdfTool {
             Collections.sort(persons, new Comparator<Person>() {
                 public int compare(Person p1, Person p2) {
                     return p1.getStartNumber().compareTo(p1.getStartNumber());
-                };
+                }
             });
             if (!persons.isEmpty()) {
 
@@ -111,7 +108,7 @@ public class PdfTool {
    
     public static void createRaceResult(Race race, String destination) throws IOException {
         if (destination.endsWith(".xml")) {
-            int lastInd = destination.lastIndexOf("\\");
+            int lastInd = destination.lastIndexOf('\\');
             destination = destination.substring(0, lastInd);
         }
         destination = destination+"\\vysledky.pdf";

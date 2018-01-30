@@ -34,8 +34,6 @@ public class CategoryForm extends JPanel {
     
     private JTable table;
     private DefaultTableModel tableModel;
-    private TableColumnModel columnModel;
-    private JPopupMenu tableMenu;
     
     private JTextField catName;
     private JTextField catDelka;
@@ -76,7 +74,7 @@ public class CategoryForm extends JPanel {
     }
     
     private void updateColumns() {
-        columnModel = table.getColumnModel();
+        TableColumnModel columnModel = table.getColumnModel();
         TableColumn tc = columnModel.getColumn(0);
         tc.setIdentifier("name");
         tc.setHeaderValue("Název kategorie");
@@ -107,30 +105,28 @@ public class CategoryForm extends JPanel {
     }
     
     private void createPopupMenu() {
-        tableMenu = new JPopupMenu();
+        JPopupMenu tableMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Smazat kategorii");
-        deleteItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        deleteItem.addActionListener(e ->
+            {
                 int selRow = table.getSelectedRow();
                 if (selRow!=-1 && selRow<rmForm.race.getCategories().size()) {
                     rmForm.race.getCategories().remove(selRow);
                     reloadTable();
                 }
             }
-        });
+        );
         tableMenu.add(deleteItem);
         
         JMenuItem edit = new JMenuItem("Editovat kategorii");
-        edit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        edit.addActionListener(e->
+            {
                 int selRow = table.getSelectedRow();
                 if (selRow!=-1 && selRow<rmForm.race.getCategories().size()) {
-                    CategoryEditForm frame = new CategoryEditForm(rmForm, rmForm.race.getCategories().get(selRow));
+                    new CategoryEditForm(rmForm, rmForm.race.getCategories().get(selRow));
                 }
             }
-        });
+        );
         tableMenu.add(edit);
         
        
@@ -193,13 +189,7 @@ public class CategoryForm extends JPanel {
         
         JButton addButton = new JButton("Vytvoøit kategorii");
         panel.add(addButton, cc.xyw(1, 9, 3));
-        
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createCategory();
-            }
-        });
+        addButton.addActionListener(e-> createCategory());
         
         return panel;
     }

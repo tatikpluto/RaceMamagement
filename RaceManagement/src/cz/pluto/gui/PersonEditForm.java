@@ -113,12 +113,8 @@ public class PersonEditForm extends JDialog {
         
         JButton cButton = new JButton("Cancel");
         btns.add(cButton, ccBtns.xyw(3, 1, 1));
-        cButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        cButton.addActionListener(e-> dispose());
+        
         panel.add(btns, cc.xyw(1, 8, 3));
         setLayout(new FormLayout("f:d:g", "p"));
         CellConstraints mainCC = new CellConstraints();
@@ -140,17 +136,13 @@ public class PersonEditForm extends JDialog {
             person.setStartNumber(stNumber);
             change = true;
         }
-        if (perName.getText()!=null && !perName.getText().isEmpty()) {
-            if (!person.getName().equals(perName.getText())){
-                person.setName(perName.getText());
-                change = true;
-            }
+        if (perName.getText()!=null && !perName.getText().isEmpty() && !person.getName().equals(perName.getText())) {
+            person.setName(perName.getText());
+            change = true;
         }
-        if (perSurname.getText()!=null && !perSurname.getText().isEmpty()) {
-            if (!person.getSurname().equals(perSurname.getText())){
-                person.setSurname(perSurname.getText());
-                change = true;
-            }
+        if (perSurname.getText() != null && !perSurname.getText().isEmpty() && !person.getSurname().equals(perSurname.getText())) {
+            person.setSurname(perSurname.getText());
+            change = true;
         }
         if ( person.getClub()==null || !person.getClub().equals(perClube.getText())) {
             person.setClub(perClube.getText());
@@ -162,7 +154,7 @@ public class PersonEditForm extends JDialog {
             change = true;
         }
         if (isWoman.isSelected()!=person.isWoman()) {
-            person.setWoman(new Boolean(isWoman.isSelected()));
+            person.setWoman(isWoman.isSelected());
             change = true;
         }
         

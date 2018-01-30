@@ -87,7 +87,6 @@ public class RMMenuBar extends JMenuBar {
                     try {
                         PdfTool.createRaceList(((RMForm)RM.desktop.getSelectedFrame()).race, ((RMForm)RM.desktop.getSelectedFrame()).filename);
                     } catch (IOException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 }
@@ -103,7 +102,6 @@ public class RMMenuBar extends JMenuBar {
                     try {
                         PdfTool.createRaceResult(((RMForm)RM.desktop.getSelectedFrame()).race, ((RMForm)RM.desktop.getSelectedFrame()).filename);
                     } catch (IOException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 }
@@ -163,7 +161,7 @@ public class RMMenuBar extends JMenuBar {
         try {
             frame.setSelected(true);
             frame.setMaximum(true);
-        } catch (java.beans.PropertyVetoException e1) {}
+        } catch (java.beans.PropertyVetoException e1) {}//nejaka chyba
         return frame;
     }
     

@@ -18,7 +18,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -37,8 +36,6 @@ public class PersonForm extends JPanel {
     
     private JTable table;
     private DefaultTableModel tableModel;
-    private TableColumnModel columnModel;
-    private JPopupMenu tableMenu;
     
     private JTextField perName;
     private JTextField perSurname;
@@ -79,7 +76,7 @@ public class PersonForm extends JPanel {
     }
     
     private void updateColumns() {
-        columnModel = table.getColumnModel();
+        TableColumnModel columnModel = table.getColumnModel();
         TableColumn tc = columnModel.getColumn(0);
         tc.setIdentifier("startNumber");
         tc.setHeaderValue("Startoví èíslo");
@@ -102,7 +99,7 @@ public class PersonForm extends JPanel {
     }
     
     private void createPopupMenu() {
-        tableMenu = new JPopupMenu();
+        JPopupMenu tableMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Smazat závodníka");
         deleteItem.addActionListener(new ActionListener() {
             @Override
@@ -122,7 +119,7 @@ public class PersonForm extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selRow = table.getSelectedRow();
                 if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
-                    PersonEditForm frame = new PersonEditForm(rmForm, rmForm.race.getPersons().get(selRow));
+                    new PersonEditForm(rmForm, rmForm.race.getPersons().get(selRow));
                 }
             }
         });
@@ -136,7 +133,7 @@ public class PersonForm extends JPanel {
                 if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
                     int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete startovní èíslo  "+rmForm.race.getPersons().get(selRow).getLabel()+"!","Pozor", JOptionPane.YES_NO_OPTION);
                     if(dialogResult == JOptionPane.YES_OPTION){
-                    rmForm.race.getPersons().get(selRow).setStartNumber(null);;
+                    rmForm.race.getPersons().get(selRow).setStartNumber(null);
                     reloadTable();
                     }
                 }
@@ -145,7 +142,6 @@ public class PersonForm extends JPanel {
         tableMenu.add(deleteSt);
         
         table.setComponentPopupMenu(tableMenu);
-        //tableMenu.addPopupMenuListener(new MyPopupMenuListener(table, tableMenu));
     }
     
     public JPanel createRightPanel() {
@@ -220,7 +216,7 @@ public class PersonForm extends JPanel {
         newPer.setSurname(perSurname.getText());
         newPer.setYear(((Long)perYear.getValue()).intValue());
         newPer.setClub(perClube.getText());        
-        newPer.setWoman(new Boolean(isWoman.isSelected()));
+        newPer.setWoman(isWoman.isSelected());
         newPer.setStartNumber(stNumber);
         
         Category cat = (Category)comboCategory.getSelectedItem();
@@ -234,7 +230,7 @@ public class PersonForm extends JPanel {
         updateEdit(newPer);
     }
     
-    private boolean addRow(Person newPer, int rowId) {
+    private boolean addRow(Person newPer) {
         Vector<Object> rowData = new Vector<>(5);
         
         rowData.add(0, newPer.getStartNumber());
@@ -248,10 +244,8 @@ public class PersonForm extends JPanel {
     
     protected void loadTable() {
         rmForm.sortPersons();
-        int rowId = 0;
         for (Person per : rmForm.race.getPersons()) {
-            addRow(per, rowId);
-            rowId++;
+            addRow(per);
             if (per.getStartNumber()!=null)
                 maxNumber = Math.max(maxNumber, per.getStartNumber());
         }

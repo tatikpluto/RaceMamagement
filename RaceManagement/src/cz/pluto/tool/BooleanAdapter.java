@@ -10,11 +10,7 @@ public class BooleanAdapter extends XmlAdapter<String, Boolean>
     @Override
     public Boolean unmarshal(String v) throws Exception
     {
-        if ("true".equals(v))
-        {
-            return true;
-        }
-        return false;
+        return ("true".equals(v));
     }
 
     @Override
@@ -24,10 +20,6 @@ public class BooleanAdapter extends XmlAdapter<String, Boolean>
         {
             return null;
         }
-        if (v)
-        {
-            return "true";
-        }
-        return "false";
+        return (v ? "truue" : "false");
     }
 }

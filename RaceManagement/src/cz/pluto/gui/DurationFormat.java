@@ -236,7 +236,7 @@ public class DurationFormat extends Format {
 
         // temp string buffers used for pattern and fields constructions
         StringBuilder parseRegex = new StringBuilder(pattern.length() + extraSpace);
-        StringBuffer fieldBuffer[] = new StringBuffer[FIELD_COUNT];
+        StringBuffer[] fieldBuffer = new StringBuffer[FIELD_COUNT];
         for (int i = 0; i < FIELD_COUNT; i++) {
             fieldBuffer[i] = new StringBuffer(pattern.length() / FIELD_COUNT + extraSpace);
         }
@@ -297,13 +297,6 @@ public class DurationFormat extends Format {
                 // long day symbol, value is stored in captured group
             } else if (chars[i] == 'D') {
                 throw new UnsupportedOperationException("Long day is not currently supported.");
-                //if(daySet==true) throw new IllegalArgumentException("Day already used in pattern. It can be used at most once.");
-                //daySet = true;
-                //multiplier[multiplierIdx++] = DAY;
-                //fieldType[fieldTypeIdx++] = FieldType.DAY;
-                //if(!(isNegativeSet)) parseRegex.append(negativeRegex);
-                //isNegativeSet = true;
-
                 // hour symbol, value is stored in captured group
             } else if (chars[i] == 'h') {
                 if (hourSet)
@@ -319,13 +312,6 @@ public class DurationFormat extends Format {
                 // long hour symbol, value is stored in captured group
             } else if (chars[i] == 'H') {
                 throw new UnsupportedOperationException("Long hour is not currently supported.");
-                //if(hourSet==true) throw new IllegalArgumentException("Hour already used in pattern. It can be used at most once.");
-                //hourSet = true;
-                //multiplier[multiplierIdx++] = HOUR;
-                //fieldType[fieldTypeIdx++] = FieldType.HOUR;
-                //if(!(isNegativeSet)) parseRegex.append(negativeRegex);
-                //isNegativeSet = true;
-
                 // minute symbol, value is stored in captured group
             } else if (chars[i] == 'm') {
                 if (minuteSet)
@@ -341,13 +327,6 @@ public class DurationFormat extends Format {
                 // long minute symbol, value is stored in captured group
             } else if (chars[i] == 'M') {
                 throw new UnsupportedOperationException("Long minute is not currently supported.");
-                //if(minuteSet==true) throw new IllegalArgumentException("Minute already used in pattern. It can be used at most once.");
-                //minuteSet = true;
-                //multiplier[multiplierIdx++] = MINUTE;
-                //fieldType[fieldTypeIdx++] = FieldType.MINUTE;
-                //if(!(isNegativeSet)) parseRegex.append(negativeRegex);
-                //isNegativeSet = true;
-
                 // second or millisecond symbol, value is stored in captured group
             } else if (chars[i] == 's') {
                 if (!(isNegativeSet)) parseRegex.append(negativeRegex);
@@ -376,17 +355,8 @@ public class DurationFormat extends Format {
             } else if (chars[i] == 'S') {
                 if (i + 2 < chars.length && chars[i + 1] == 'S' && chars[i + 2] == 'S') {
                     throw new UnsupportedOperationException("Long millisecond is not currently supported.");
-                    //if(millisecondSet==true) throw new IllegalArgumentException("Millisecond already used in pattern. It can be used at most once.");
-                    //millisecondSet = true;
-                    //multiplier[multiplierIdx++] = MILLISECOND;
-                    //fieldType[fieldTypeIdx++] = FieldType.MILLISECOND;
-                    //i+=2;
                 } 
                 throw new UnsupportedOperationException("Long second is not currently supported.");
-                //if(secondSet==true) throw new IllegalArgumentException("Second already used in pattern. It can be used at most once.");
-                //secondSet = true;
-                //multiplier[multiplierIdx++] = SECOND;
-                //fieldType[fieldTypeIdx++] = FieldType.SECOND;
                 // symbol to escape
             } else if (regexCharsToEscape.indexOf(chars[i]) != -1) {
                 parseRegex.append('\\').append(chars[i]);
@@ -421,7 +391,6 @@ public class DurationFormat extends Format {
      *
      * @return current pattern
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public String toPattern() {
         return pattern;
     }
@@ -655,35 +624,7 @@ public class DurationFormat extends Format {
     }
 
     public enum FieldType {
-        @SuppressWarnings({"UnusedDeclaration"})
         UNKNOWN, DAY, HOUR, MINUTE, SECOND, MILLISECOND
-    }
-
-    public static class Field extends Format.Field {
-        public Field(String name) {
-            super(name);
-        }
-
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field DAY_FIELD = new Field("Day");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SHORT_DAY_FIELD = new Field("Short day");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field HOUR_FIELD = new Field("Hour");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SHORT_HOUR_FIELD = new Field("Short hour");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field MINUTE_FIELD = new Field("Minute");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SHORT_MINUTE_FIELD = new Field("Short minute");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SECOND_FIELD = new Field("Second");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SHORT_SECOND_FIELD = new Field("Short second");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field MILLISECOND_FIELD = new Field("Millisecond");
-        @SuppressWarnings({"UnusedDeclaration"})
-        public final static Field SHORT_MILLISECOND_FIELD = new Field("Short millisecond");
     }
 
     public static String updateDurationUserValueToFormat(String userValue, String pattern) {
@@ -692,31 +633,27 @@ public class DurationFormat extends Format {
         }
         StringTokenizer tokenizer = new StringTokenizer(pattern, " ");
         userValue = userValue.trim();
-        String newValue = "";
+        StringBuilder bld = new StringBuilder();
         String prevToken = null;
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
             if (!userValue.contains(token)) {
-                if (userValue.replaceAll("[\\d|\\s]", "").equals("") && newValue.equals("")) {
+                if (userValue.replaceAll("[\\d|\\s]", "").equals("") && bld.length()==0) {
                     return userValue + (userValue.contains(" ") ? "" : " ") + token;
                 }
             } else {
-                newValue += prevToken == null ?
+                bld.append( prevToken == null ?
                         userValue.substring(0, userValue.indexOf(token) + 1) :
-                        userValue.substring(userValue.indexOf(prevToken) + 1, userValue.indexOf(token) + 1);
-                if (userValue.endsWith(token)) {
-                    return newValue;
-                } 
-                if (userValue.substring(userValue.indexOf(token) + 1).replaceAll("[\\d|\\s]", "").equals("")) {
-                    if (tokenizer.hasMoreTokens()) {
-                        newValue += userValue.substring(userValue.indexOf(token) + 1) + " " + tokenizer.nextToken();
-                        return newValue;
-                    }
+                        userValue.substring(userValue.indexOf(prevToken) + 1, userValue.indexOf(token) + 1));
+
+                if (userValue.endsWith(token) || userValue.substring(userValue.indexOf(token) + 1).replaceAll("[\\d|\\s]", "").equals("") && tokenizer.hasMoreTokens()) {
+                    bld.append(userValue.substring(userValue.indexOf(token) + 1) + " " + tokenizer.nextToken());
+                    break;
                 }
             }
             prevToken = token;
         }
-        return newValue;
+        return bld.toString();
     }
 
     public static long getStepValue(String userValue, String pattern) {

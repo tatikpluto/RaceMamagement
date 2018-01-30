@@ -1,7 +1,6 @@
 package cz.pluto.gui;
 
 import java.text.DateFormatSymbols;
-import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -26,7 +25,6 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
      *             if the resources for the default locale cannot be
      *             found or cannot be loaded.
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public DateTimeFormatSymbols() {
         this(Locale.getDefault());
     }
@@ -41,10 +39,9 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
      */
     public DateTimeFormatSymbols(Locale locale) {
         super(locale);
-        initializeData(locale);
+        initializeLocaleData(locale);
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public String[] getDays() {
         return days;
     }
@@ -61,7 +58,6 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
         this.shortDay = shortDay;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public String[] getHours() {
         return hours;
     }
@@ -78,7 +74,6 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
         this.shortHour = shortHour;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public String[] getMinutes() {
         return minutes;
     }
@@ -95,7 +90,6 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
         this.shortMinute = shortMinute;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public String[] getSeconds() {
         return seconds;
     }
@@ -112,7 +106,6 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
         this.shortSecond = shortSecond;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public String[] getMilliseconds() {
         return milliseconds;
     }
@@ -129,8 +122,8 @@ public class DateTimeFormatSymbols extends DateFormatSymbols {
         this.shortMillisecond = shortMillisecond;
     }
 
-    private void initializeData(Locale desiredLocale) {
-        ResourceBundle rb = ResourceBundle.getBundle(TimeFormatData.class.getName(), desiredLocale);
+    private void initializeLocaleData(Locale locale) {
+        ResourceBundle rb = ResourceBundle.getBundle(TimeFormatData.class.getName(), locale);
 
         setDays(rb.getStringArray("days"));
         setShortDay(rb.getString("shortDay"));

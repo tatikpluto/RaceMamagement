@@ -26,7 +26,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import cz.pluto.data.Category;
 import cz.pluto.data.Person;
 import cz.pluto.data.Result;
-import cz.pluto.gui.listeners.MyPopupMenuListener;
 import cz.pluto.tool.Tool;
 
 @SuppressWarnings("serial")
@@ -37,8 +36,6 @@ public class ResultForm extends JPanel {
     
     private JTable table;
     private DefaultTableModel tableModel;
-    private TableColumnModel columnModel;
-    private JPopupMenu tableMenu;
     
     private RMForm rmForm;
     
@@ -71,7 +68,7 @@ public class ResultForm extends JPanel {
     }
     
     private void updateColumns() {
-        columnModel = table.getColumnModel();
+        TableColumnModel columnModel = table.getColumnModel();
         
         TableColumn tc = columnModel.getColumn(0);
         tc.setIdentifier("startNumber");
@@ -91,7 +88,7 @@ public class ResultForm extends JPanel {
     }
     
     private void createPopupMenu() {
-        tableMenu = new JPopupMenu();
+        JPopupMenu tableMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Smazat výsledek");
         deleteItem.addActionListener(new ActionListener() {
             @Override
@@ -109,7 +106,6 @@ public class ResultForm extends JPanel {
         });
         tableMenu.add(deleteItem);
         table.setComponentPopupMenu(tableMenu);
-        //tableMenu.addPopupMenuListener(new MyPopupMenuListener(table, tableMenu));
     }
     
     public JPanel createRightPanel() {

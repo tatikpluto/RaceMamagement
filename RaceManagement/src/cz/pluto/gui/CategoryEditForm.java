@@ -2,8 +2,6 @@ package cz.pluto.gui;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -17,13 +15,11 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import cz.pluto.data.Category;
 
-@SuppressWarnings("serial")
 public class CategoryEditForm extends JDialog {
     
     private RMForm masterForm;
     private Category category;
     
-    private JTextField catName;
     private JFormattedTextField catTime;
     
     public CategoryEditForm(RMForm rmForm, Category p) {
@@ -42,7 +38,7 @@ public class CategoryEditForm extends JDialog {
         CellConstraints cc = new CellConstraints();
         
         panel.add(new JLabel("Kategorie:"), cc.xy (1, 1)); 
-        catName = new JTextField(30);
+        JTextField catName = new JTextField(30);
         panel.add(catName, cc.xyw(3, 1, 1));
         catName.setText(category.getName());
         catName.setEditable(false);
@@ -60,22 +56,11 @@ public class CategoryEditForm extends JDialog {
         
         JButton okButton = new JButton("OK");
         btns.add(okButton, ccBtns.xyw(2, 1, 1));
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                update();
-                dispose();
-            }
-        });
+        okButton.addActionListener(e -> update()); 
         
         JButton cButton = new JButton("Cancel");
         btns.add(cButton, ccBtns.xyw(3, 1, 1));
-        cButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        cButton.addActionListener(e -> dispose());
         panel.add(btns, cc.xyw(1, 3, 3));
         add(panel);
     }
@@ -84,6 +69,7 @@ public class CategoryEditForm extends JDialog {
         Long l = (Long)catTime.getValue();
         category.setStartTime(l==null ? 0 : l);
         masterForm.categoryForm.reloadTable();
+        dispose();
     }
 
 }

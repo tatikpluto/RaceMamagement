@@ -28,14 +28,9 @@ public class XmlTool {
             try {
                 OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file),"UTF-8");
                 jaxbMarshaller.marshal(form.race, out);
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
+            } catch (UnsupportedEncodingException|FileNotFoundException e) {
                 e.printStackTrace();
             }
-            // jaxbMarshaller.marshal(customer, System.out);
         } catch (JAXBException e) {
             e.printStackTrace();
         }
@@ -52,14 +47,9 @@ public class XmlTool {
             try {
                 InputStreamReader is = new InputStreamReader(new FileInputStream(file), "UTF-8");
                 form.race = (Race) jaxbUnmarshaller.unmarshal(is);
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
+            } catch (UnsupportedEncodingException|FileNotFoundException e) {
                 e.printStackTrace();
             }
-           
         } catch (JAXBException e) {
             e.printStackTrace();
         }

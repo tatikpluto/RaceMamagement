@@ -25,7 +25,8 @@ import javax.swing.JTabbedPane;
 @SuppressWarnings("serial")
 public class RMForm extends JInternalFrame {
     static int openFrameCount = 0;
-    static final int xOffset = 30, yOffset = 30;
+    static final int xOffset = 30; 
+    static final int yOffset = 30;
     
     private JLabel lName = new JLabel("Název závodu: ");
     private JLabel lPlace = new JLabel("Místo závodu: ");
@@ -39,7 +40,7 @@ public class RMForm extends JInternalFrame {
     protected PersonForm   personForm;
     protected ResultForm   resultForm;
     
-    public Race race;
+    public transient Race race;
     
     public String filename = null;
     
@@ -87,18 +88,17 @@ public class RMForm extends JInternalFrame {
     
     public Category getCategory(int year, boolean isWoman) {
         for (Category cat : race.getCategories()) {
-            if (cat.getMinYear()!=null && cat.getMinYear()>year)
-                continue;
-            if (cat.getMaxYear()!=null && cat.getMaxYear()<year)
-                continue;
-            if (cat.getGender()!=Gender.both && isWoman && cat.getGender()==Gender.male)
-                continue;
-            if (cat.getGender()!=Gender.both && !isWoman && cat.getGender()==Gender.female)
-                continue;
-            
-            if (cat.getMaxYear()==null && cat.getMinYear()>year)
-                continue;
-            if (cat.getMinYear()==null && cat.getMaxYear()<year)
+            if ((cat.getMinYear()!=null && cat.getMinYear()>year)
+               ||
+               (cat.getMaxYear()!=null && cat.getMaxYear()<year)
+               ||
+               (cat.getGender()!=Gender.both && isWoman && cat.getGender()==Gender.male)
+               ||
+               (cat.getGender()!=Gender.both && !isWoman && cat.getGender()==Gender.female)
+               ||
+               (cat.getMaxYear()==null && cat.getMinYear()>year)
+               ||
+               (cat.getMinYear()==null && cat.getMaxYear()<year))
                 continue;
             
             return cat;
@@ -166,7 +166,6 @@ public class RMForm extends JInternalFrame {
     }
     
     public void sortPersons() {
-        //TODO pouzit locale
         Collator coll = Collator.getInstance(new Locale("cs", "CZ"));
         coll.setStrength(Collator.PRIMARY);
         race.getPersons().sort(Comparator.comparing(Person::getStartNumber, Comparator.nullsLast(Comparator.naturalOrder())));

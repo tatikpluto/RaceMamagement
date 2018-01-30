@@ -1,6 +1,5 @@
 package cz.pluto.gui;
 
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,12 +14,10 @@ import org.pushingpixels.substance.api.skin.SubstanceBusinessBlackSteelLookAndFe
 @SuppressWarnings("serial")
 public class RM extends JFrame implements ActionListener {
 
-    static JDesktopPane desktop;
+    static JDesktopPane desktop = new JDesktopPane(); //a specialized layered pane
     
-    public RM() throws HeadlessException {
+    public RM() {
         super("Race Management");
-        // TODO Auto-generated constructor stub
-        desktop = new JDesktopPane(); //a specialized layered pane
         setContentPane(desktop);
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         setJMenuBar(new RMMenuBar());
@@ -28,8 +25,6 @@ public class RM extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-        
     }
     
     private static void createAndShowGUI() {
