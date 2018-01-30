@@ -9,18 +9,18 @@ public class Club {
     /**
      * Id klubu  1 - n
      */
-    int club_id;
+    int clubId;
     /**
      * Jmeno klubu
      */
     String name;
 
     public int getId() {
-        return club_id;
+        return clubId;
     }
     @XmlElement
     public void setId(int id) {
-        this.club_id = id;
+        this.clubId = id;
     }
     public String getName() {
         return name;
