@@ -65,14 +65,8 @@ public class PersonForm extends JPanel {
         createPopupMenu();
         updateColumns();
         loadTable();
-        table.setFillsViewportHeight(true);
-        table.setCellSelectionEnabled(false);
-        table.setColumnSelectionAllowed(false);
-        table.setRowSelectionAllowed(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setSelectionBackground(Color.GREEN.brighter());
-        JScrollPane scrollPane = new JScrollPane(table);
-        return scrollPane;
+        return new JScrollPane(table);
     }
     
     private void createTableModel() {
