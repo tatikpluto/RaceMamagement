@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Person {
+    private static int nextId = 1000;
+    
+    int personId;
     /**
      * Id pro zavodnika a jeho startovaci cislo
      */
@@ -42,8 +45,13 @@ public class Person {
     Long time;
     
     public Person() {
+        personId = nextId++;
     }
     
+    public int getPersonId() {
+        return personId;
+    }
+
     @XmlElement
     public Integer getStartNumber() {
         return startNumber;

@@ -1,7 +1,5 @@
 package cz.pluto.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Duration;

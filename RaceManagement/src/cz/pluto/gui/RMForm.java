@@ -22,11 +22,10 @@ import cz.pluto.data.Result;
 
 import javax.swing.JTabbedPane;
 
-@SuppressWarnings("serial")
 public class RMForm extends JInternalFrame {
     static int openFrameCount = 0;
-    static final int xOffset = 30; 
-    static final int yOffset = 30;
+    static final int XOFFSET = 30; 
+    static final int YOFFSET = 30;
     
     private JLabel lName = new JLabel("Název závodu: ");
     private JLabel lPlace = new JLabel("Místo závodu: ");

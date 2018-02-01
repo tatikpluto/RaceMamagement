@@ -81,12 +81,8 @@ public class PersonEditForm extends JDialog {
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 6)); 
         perStartNumber= new JFormattedTextField(NumberFormat.getIntegerInstance());
         perStartNumber.setHorizontalAlignment(JTextField.RIGHT);
+        perStartNumber.setValue(person.getStartNumber());
         panel.add(perStartNumber, cc.xyw(3, 6, 1));
-        
-        if (person.getStartNumber()!=null) {
-            perStartNumber.setValue(person.getStartNumber());
-            perStartNumber.setEditable(false);
-        }
         
         panel.add(new JLabel("Kategorie:"), cc.xy (1, 7)); 
         comboCategory= new JComboBox<>();
@@ -125,11 +121,11 @@ public class PersonEditForm extends JDialog {
     private boolean update() {
         boolean change = false;
         Integer stNumber = null;
-        if (perStartNumber.getValue()!=null && person.getStartNumber()==null) {
+        if (perStartNumber.getValue()!=null) {
             stNumber =((Number)perStartNumber.getValue()).intValue();
             Person check = masterForm.getPerson(stNumber);
-            if (check!=null) {
-                JOptionPane.showMessageDialog(this, "Startovní èíslo "+stNumber+" je již pøiøazeno !");
+            if (check!=null && check.getPersonId()!=person.getPersonId()) {
+                JOptionPane.showMessageDialog(this, "Startovní èíslo "+stNumber+" je již pøiøazeno: " + check.getLabel());
                 return false;
             }
             
