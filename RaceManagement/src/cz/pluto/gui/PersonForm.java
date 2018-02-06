@@ -206,7 +206,7 @@ public class PersonForm extends JPanel {
             stNumber =((Number)perStartNumber.getValue()).intValue();
             Person check = rmForm.getPerson(stNumber);
             if (check!=null) {
-                JOptionPane.showMessageDialog(rmForm, "Startovní èíslo "+stNumber+" je již pøiøazeno !");
+                JOptionPane.showMessageDialog(rmForm, "Startovní èíslo "+stNumber+" je již pøiøazeno: "+ check.getLabel());
                 return;
             }
         }
