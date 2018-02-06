@@ -3,6 +3,7 @@ package cz.pluto.gui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Vector;
 
@@ -169,8 +170,12 @@ public class PersonForm extends JPanel {
         perClube= new JTextField(30);
         panel.add(perClube, cc.xyw(3, 5, 1));
         
+        DecimalFormat stCislaFormat = (DecimalFormat)NumberFormat.getNumberInstance();
+        stCislaFormat.setMinimumIntegerDigits(0);
+        stCislaFormat.setMaximumIntegerDigits(3);
+        
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 6)); 
-        perStartNumber= new JFormattedTextField(NumberFormat.getIntegerInstance());
+        perStartNumber= new JFormattedTextField(stCislaFormat);
         perStartNumber.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(perStartNumber, cc.xyw(3, 6, 1));
         

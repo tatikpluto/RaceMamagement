@@ -20,6 +20,15 @@ public class Category {
      * Pohlavi
      */
     Gender  gender=Gender.both;
+    /**
+     * Intervalové starty
+     */
+    boolean intervalovyStart = false;
+    
+    /**
+     * Interval pro intervalove starty
+     */
+    Integer interval = null;
     
     /**
      * Rocnik narozeni od (null neni omezeni)
@@ -120,7 +129,22 @@ public class Category {
     public void setMaxNumber(Integer maxNumber) {
         this.maxNumber = maxNumber;
     }
-    
+    @XmlElement
+    public boolean isIntervalovyStart() {
+        return intervalovyStart;
+    }
+
+    public void setIntervalovyStart(boolean intervalovyStart) {
+        this.intervalovyStart = intervalovyStart;
+    }
+    @XmlElement
+    public Integer getInterval() {
+        return interval;
+    }
+    public void setInterval(Integer interval) {
+        this.interval = interval;
+    }
+
     @Override
     public String toString() {
         return name;

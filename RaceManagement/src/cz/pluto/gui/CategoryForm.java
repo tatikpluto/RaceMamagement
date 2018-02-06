@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -41,6 +42,8 @@ public class CategoryForm extends JPanel {
     private JFormattedTextField catMaxYear;
     private JFormattedTextField catMinNumber;
     private JFormattedTextField catMaxNumber;
+    private JCheckBox isInterval;
+    private JFormattedTextField catInterval;
     
     private RMForm rmForm;
     
@@ -63,7 +66,7 @@ public class CategoryForm extends JPanel {
     }
     
     private void createTableModel() {
-        tableModel = new DefaultTableModel(0, 7) {
+        tableModel = new DefaultTableModel(0, 9) {
             @Override
             public boolean isCellEditable(int row, int column){  
                 return false;  
@@ -100,6 +103,14 @@ public class CategoryForm extends JPanel {
         tc = columnModel.getColumn(6);
         tc.setIdentifier("numbers");
         tc.setHeaderValue("Startoví èísla");
+        
+        tc = columnModel.getColumn(7);
+        tc.setIdentifier("isInterval");
+        tc.setHeaderValue("Int. Start");
+        
+        tc = columnModel.getColumn(8);
+        tc.setIdentifier("interval");
+        tc.setHeaderValue("Interval");
     }
     
     private void createPopupMenu() {
@@ -133,7 +144,7 @@ public class CategoryForm extends JPanel {
     }
     
     public JPanel createRightPanel() {
-        JPanel panel = new JPanel(new FormLayout( "p, 2dlu, p", "p,p,p,p,p,p,p,p,p,f:d:g"));
+        JPanel panel = new JPanel(new FormLayout( "p, 2dlu, p", "p,p,p,p,p,p,p,p,p,p,p,f:d:g"));
         CellConstraints cc = new CellConstraints();
         
         panel.add(new JLabel("Název:"), cc.xy (1, 1)); 
@@ -185,8 +196,21 @@ public class CategoryForm extends JPanel {
         catStartTime.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(catStartTime, cc.xyw(3, 8, 1));
         
+        panel.add(new JLabel("Startovat intervalovì:"), cc.xy (1, 9));
+        isInterval = new JCheckBox();
+        panel.add(isInterval, cc.xyw(3, 9, 1));
+        
+        DecimalFormat intervalFormat = (DecimalFormat)NumberFormat.getNumberInstance();
+        intervalFormat.setMinimumIntegerDigits(0);
+        intervalFormat.setMaximumIntegerDigits(3);
+        
+        panel.add(new JLabel("Interval v sekundách:"), cc.xy (1, 10)); 
+        catInterval= new JFormattedTextField(intervalFormat);
+        catInterval.setHorizontalAlignment(JTextField.RIGHT);
+        panel.add(catInterval, cc.xyw(3, 10, 1));
+        
         JButton addButton = new JButton("Vytvoøit kategorii");
-        panel.add(addButton, cc.xyw(1, 9, 3));
+        panel.add(addButton, cc.xyw(1, 11, 3));
         addButton.addActionListener(e-> createCategory());
         
         return panel;
@@ -211,6 +235,9 @@ public class CategoryForm extends JPanel {
         if (catMaxNumber.getValue()!=null)
             newCat.setMaxNumber(((Long)catMaxNumber.getValue()).intValue());
         
+        newCat.setIntervalovyStart(isInterval.isSelected());
+        newCat.setInterval(((Long)catInterval.getValue()).intValue());
+        
         rmForm.race.getCategories().add(newCat);
         addRow(newCat);
         
@@ -221,11 +248,13 @@ public class CategoryForm extends JPanel {
         catMinNumber.setValue(null);
         catMaxNumber.setValue(null);
         catStartTime.setValue(null);
+        isInterval.setSelected(false);
+        catInterval.setValue(null);
         rmForm.personForm.reloadCategoriesInCombo();
     }
     
     private void addRow(Category newCat) {
-        Vector<Object> rowData = new Vector<>(5);
+        Vector<Object> rowData = new Vector<>(6);
         
         rowData.add(0, newCat.getName());
         rowData.add(1, newCat.getMinYear());
@@ -239,6 +268,8 @@ public class CategoryForm extends JPanel {
         if (newCat.getMaxNumber()!=null)
             numbers += (numbers.isEmpty()?" - ":"")+newCat.getMaxNumber();
         rowData.add(6, numbers);
+        rowData.add(7, (newCat.isIntervalovyStart() ? "Intervalovì" : "Hromadnì"));
+        rowData.add(8, newCat.getInterval());
         tableModel.addRow(rowData);
         
     }
