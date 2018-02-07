@@ -4,6 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -28,7 +32,6 @@ import cz.pluto.data.Person;
 import cz.pluto.data.Result;
 import cz.pluto.tool.Tool;
 
-@SuppressWarnings("serial")
 public class ResultForm extends JPanel {
     
     private JFormattedTextField resNumber;
@@ -125,13 +128,8 @@ public class ResultForm extends JPanel {
         JButton addButton = new JButton("Uložit");
         panel.add(addButton, cc.xyw(1, 3, 3));
         
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createResult();
-            }
-        });
-        
+        addButton.addActionListener(e -> createResult());
+
         return panel;
     }
     
@@ -146,7 +144,7 @@ public class ResultForm extends JPanel {
         res.setStartNumber(((Number)resNumber.getValue()).intValue());
         Person per = rmForm.getPerson(res.getStartNumber());
         if (per==null) {
-            JOptionPane.showMessageDialog(rmForm, "Startovní èíslo neexistuje !");
+            JOptionPane.showMessageDialog(rmForm, "Neexistující startovní èíslo: "+res.getStartNumber());
             return;
         }
         res.setTime((Long)resTime.getValue());
@@ -156,6 +154,28 @@ public class ResultForm extends JPanel {
             addRow(res, true);
             Category cat = rmForm.getCategory(per.getCategoryName());
             per.setTime(res.getTime()-cat.getStartTime());
+            if (cat.isIntervalovyStart() && cat.getInterval()!=null) {
+                Long time = per.getTime();
+                Duration dur = Duration.ofSeconds(cat.getInterval().intValue());
+                
+                //nastaveni vysledneho casu podle intervalu
+                List<Person> persons = new ArrayList<>();
+                for (Person p : rmForm.race.getPersons()) {
+                    if (p.getCategoryName().equals(cat.getName()))
+                        persons.add(p);
+                }
+                Collections.sort(persons, new Comparator<Person>() {
+                    public int compare(Person p1, Person p2) {
+                        return p1.getStartNumber().compareTo(p1.getStartNumber());
+                    }
+                });
+                for (int i = 0; i < persons.size(); i++) {
+                    if (persons.get(i).getPersonId()==per.getPersonId()) {
+                        per.setTime(time - (dur.multipliedBy(i)).toMillis());
+                        break;
+                    }
+                }
+            }
         }else {
             JOptionPane.showMessageDialog(rmForm, "Výsledný èas pro startovní èíslo "+res.getStartNumber()+" je již zadán.");
         }

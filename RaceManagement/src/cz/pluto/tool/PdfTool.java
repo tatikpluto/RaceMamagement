@@ -144,7 +144,7 @@ public class PdfTool {
             if (persons.isEmpty())
                 continue;
             
-            persons.sort(Comparator.comparing(Person::getTime,Comparator.nullsLast(Comparator.naturalOrder())));
+            persons.sort(Comparator.comparing(Person::getTime, Comparator.nullsLast(Comparator.naturalOrder())));
             if (!persons.isEmpty()) {
                 Paragraph catName = new Paragraph(cat.getName()+" :  "+cat.getDelka());
                 document.add(catName.setFont(bold).setFontSize(11));
