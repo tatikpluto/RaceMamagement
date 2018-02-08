@@ -269,6 +269,7 @@ public class PersonForm extends JPanel {
         table.setModel(tableModel);
         updateColumns();
         loadTable();
+        rmForm.updateTitle();
     }
     
     

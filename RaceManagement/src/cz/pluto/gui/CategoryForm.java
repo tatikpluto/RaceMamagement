@@ -122,6 +122,7 @@ public class CategoryForm extends JPanel {
                 if (selRow!=-1 && selRow<rmForm.race.getCategories().size()) {
                     rmForm.race.getCategories().remove(selRow);
                     reloadTable();
+                    rmForm.updateTitle();
                 }
             }
         );
@@ -258,6 +259,8 @@ public class CategoryForm extends JPanel {
         isInterval.setSelected(false);
         catInterval.setValue(null);
         rmForm.personForm.reloadCategoriesInCombo();
+        
+        rmForm.updateTitle();
     }
     
     private void addRow(Category newCat) {
@@ -278,7 +281,6 @@ public class CategoryForm extends JPanel {
         rowData.add(7, (newCat.isIntervalovyStart() ? "Intervalovì" : "Hromadnì"));
         rowData.add(8, newCat.getInterval());
         tableModel.addRow(rowData);
-        
     }
     
     protected void loadTable() {

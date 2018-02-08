@@ -2,7 +2,6 @@ package cz.pluto.gui;
 
 import java.awt.Dimension;
 import java.text.Collator;
-import java.util.Comparator;
 import java.util.Locale;
 
 import javax.swing.JInternalFrame;
@@ -85,6 +84,17 @@ public class RMForm extends JInternalFrame {
 
     }
     
+    
+    public void updateTitle() {
+        if (tabs.getTabCount() > 2) {
+            tabs.setTitleAt(0, "Kategorie: " + race.getCategories().size());
+            tabs.setTitleAt(1, "Startující: " + race.getPersons().size());
+        }
+    }
+    
+    
+    
+    
     public Category getCategory(int year, boolean isWoman) {
         for (Category cat : race.getCategories()) {
             if ((cat.getMinYear()!=null && cat.getMinYear()>year)
@@ -162,12 +172,23 @@ public class RMForm extends JInternalFrame {
         }
         
         resultForm.loadTable();
+        updateTitle();
     }
     
     public void sortPersons() {
         Collator coll = Collator.getInstance(new Locale("cs", "CZ"));
         coll.setStrength(Collator.PRIMARY);
-        race.getPersons().sort(Comparator.comparing(Person::getStartNumber, Comparator.nullsLast(Comparator.naturalOrder())));
+        race.getPersons().sort( (p1, p2) -> {
+           if (p1.getStartNumber()==null && p2.getStartNumber()==null)
+               return coll.compare(p1.getLabel(), p2.getLabel());
+           else {
+               if (p1.getStartNumber()!=null && p2.getStartNumber()!=null)
+                 return p1.getStartNumber().compareTo(p2.getStartNumber());
+               else
+                 return (p1.getStartNumber()!=null ? -1 : 1);
+           }
+         }
+        );
     }
 
 }
