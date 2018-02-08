@@ -78,6 +78,21 @@ public class RMMenuBar extends JMenuBar {
         printMenu.setMnemonic(KeyEvent.VK_P);
         add(printMenu);
         
+        
+        menuItem = new JMenuItem("Uložit Pøihlášené do PDF");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (RM.desktop.getSelectedFrame()!=null) {
+                    try {
+                        PdfTool.createPersonList(((RMForm)RM.desktop.getSelectedFrame()).race, ((RMForm)RM.desktop.getSelectedFrame()).filename);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
+        printMenu.add(menuItem);
         //Set up the first menu item.
         menuItem = new JMenuItem("Uložit Startovku do PDF");
         menuItem.addActionListener(new ActionListener() {

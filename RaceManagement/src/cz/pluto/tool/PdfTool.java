@@ -37,6 +37,66 @@ public class PdfTool {
         byte[] byteText = in.getBytes(Charset.forName("UTF-8"));
         return new String(byteText, Charset.forName("UTF-8"));
     }
+    
+    
+    public static void createPersonList(Race race, String destination) throws IOException {
+        if (destination.endsWith(".xml")) {
+            int lastInd = destination.lastIndexOf('\\');
+            destination = destination.substring(0, lastInd);
+        }
+        destination = destination+"\\prihlaseni.pdf";
+        PdfDocument pdf = new PdfDocument(new PdfWriter(destination));
+        PageSize pagesize = PageSize.A4;
+        Document document = new Document(pdf, pagesize);
+        PdfFont font = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN,PdfEncodings.CP1250);
+        PdfFont bold = PdfFontFactory.createFont(FontConstants.TIMES_BOLD, PdfEncodings.CP1250);
+        PdfFont italic = PdfFontFactory.createFont(FontConstants.TIMES_ITALIC, PdfEncodings.CP1250);
+        Text title = new Text("Pøihlášení závodníci").setFont(bold).setFontSize(20);
+        document.setTopMargin(15f); //odsazeni z hora
+        document.add(new Paragraph().add(title).setTextAlignment(TextAlignment.CENTER));
+
+            List<Person> persons = new ArrayList<>(race.getPersons());
+            Collections.sort(persons, new Comparator<Person>() {
+                public int compare(Person p1, Person p2) {
+                    if (!p1.getClub().equalsIgnoreCase(p2.getClub()))
+                        return p1.getClub().compareTo(p2.getClub());
+                    else {
+                        return p1.getLabel().compareTo(p1.getLabel());
+                    }
+                }
+            });
+            if (!persons.isEmpty()) {
+                Table table = new Table(4);
+                //header
+                Cell[] headerFooter = new Cell[] {
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(7).add("St. èíslo"),
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).add("Jméno"),
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).add("Klub"),
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(5).add("Roèník")
+                };
+                for (Cell hfCell : headerFooter) {
+                    table.addHeaderCell(hfCell.setFontSize(9));
+                }
+                float fontSize = 9;
+                for (Person person : persons) {
+                    // Startovní èíslo
+                    Cell sn = new Cell().add(person.getStartNumber()==null ? "" :Integer.toString(person.getStartNumber()));
+                    sn.setFont(font).setFontSize(fontSize);
+                    sn.setTextAlignment(TextAlignment.RIGHT);
+                    sn.setWidthPercent(7);
+                    table.addCell(sn);
+                    
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getLabel()));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getClub()));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.RIGHT).setFont(font).setFontSize(fontSize).setWidthPercent(5).add(Integer.toString(person.getYear())));
+                }
+                
+                document.add(table);
+                document.add(new Paragraph().setHeight(6f));
+            }
+            
+        document.close();
+    }
 
    
     public static void createRaceList(Race race, String destination) throws IOException {
