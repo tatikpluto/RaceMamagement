@@ -30,7 +30,7 @@ public class PersonEditForm extends JDialog {
     private JTextField perClube;
     private JCheckBox isWoman;
     private JFormattedTextField perYear;
-    JFormattedTextField perStartNumber;
+    JTextField perStartNumber;
     private JComboBox<Category> comboCategory;
     
     public PersonEditForm(RMForm rmForm, Person p) {
@@ -79,9 +79,10 @@ public class PersonEditForm extends JDialog {
         perClube.setText(person.getClub());
         
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 6)); 
-        perStartNumber= new JFormattedTextField(NumberFormat.getIntegerInstance());
+        perStartNumber= new JTextField(30);
         perStartNumber.setHorizontalAlignment(JTextField.RIGHT);
-        perStartNumber.setValue(person.getStartNumber());
+        if (person.getStartNumber()!=null)
+        	perStartNumber.setText(person.getStartNumber().toString());
         panel.add(perStartNumber, cc.xyw(3, 6, 1));
         
         panel.add(new JLabel("Kategorie:"), cc.xy (1, 7)); 
@@ -121,14 +122,20 @@ public class PersonEditForm extends JDialog {
     private boolean update() {
         boolean change = false;
         Integer stNumber = null;
-        if (perStartNumber.getValue()!=null) {
-            stNumber =((Number)perStartNumber.getValue()).intValue();
-            Person check = masterForm.getPerson(stNumber);
-            if (check!=null && check.getPersonId()!=person.getPersonId()) {
-                JOptionPane.showMessageDialog(this, "Startovní èíslo "+stNumber+" je již pøiøazeno: " + check.getLabel());
-                return false;
-            }
-            
+        if (perStartNumber.getText()!=null) {
+        	String text = perStartNumber.getText();
+        	try {
+            stNumber = Integer.parseInt(text);
+        	} catch(NumberFormatException nfe) {
+        		
+        	}
+        	if (stNumber!=null) {
+	            Person check = masterForm.getPerson(stNumber);
+	            if (check!=null && check.getPersonId()!=person.getPersonId()) {
+	                JOptionPane.showMessageDialog(this, "Startovní èíslo "+stNumber+" je již pøiøazeno: " + check.getLabel());
+	                return false;
+	            }
+        	}
             person.setStartNumber(stNumber);
             change = true;
         }

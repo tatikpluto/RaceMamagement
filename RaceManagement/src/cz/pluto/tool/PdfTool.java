@@ -60,7 +60,7 @@ public class PdfTool {
         for (Category cat : race.getCategories()) {
             List<Person> persons = new ArrayList<>();
             for (Person per : race.getPersons()) {
-                if (per.getCategoryName().equals(cat.getName()))
+                if (per.getStartNumber()!=null &&  per.getCategoryName().equals(cat.getName()))
                     persons.add(per);
             }
             Collections.sort(persons, new Comparator<Person>() {
@@ -137,7 +137,7 @@ public class PdfTool {
         for (Category cat : race.getCategories()) {
             List<Person> persons = new ArrayList<>();
             for (Person per : race.getPersons()) {
-                if (per.getCategoryName().equals(cat.getName())) {
+                if (per.getStartNumber()!=null && per.getCategoryName().equals(cat.getName())) {
                     persons.add(per);
                 }
             }

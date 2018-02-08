@@ -150,7 +150,7 @@ public class RMForm extends JInternalFrame {
         categoryForm.loadTable();
         personForm.loadTable();
         personForm.reloadCategoriesInCombo();
-        personForm.perStartNumber.setValue(PersonForm.maxNumber+1);
+        personForm.perStartNumber.setText(Integer.toString(PersonForm.maxNumber+1));
         
         for (Person per : race.getPersons()) {
             if (per.getStartNumber()!=null) {

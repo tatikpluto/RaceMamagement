@@ -43,7 +43,7 @@ public class PersonForm extends JPanel {
     private JTextField perClube;
     private JCheckBox isWoman;
     private JFormattedTextField perYear;
-    JFormattedTextField perStartNumber;
+    JTextField perStartNumber;
     private JComboBox<Category> comboCategory;
     
     private RMForm rmForm;
@@ -175,7 +175,7 @@ public class PersonForm extends JPanel {
         stCislaFormat.setMaximumIntegerDigits(3);
         
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 6)); 
-        perStartNumber= new JFormattedTextField(stCislaFormat);
+        perStartNumber= new JTextField(30);
         perStartNumber.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(perStartNumber, cc.xyw(3, 6, 1));
         
@@ -207,13 +207,21 @@ public class PersonForm extends JPanel {
         }
         
         Integer stNumber = null;
-        if (perStartNumber.getValue()!=null) {
-            stNumber =((Number)perStartNumber.getValue()).intValue();
-            Person check = rmForm.getPerson(stNumber);
-            if (check!=null) {
-                JOptionPane.showMessageDialog(rmForm, "Startovní èíslo "+stNumber+" je již pøiøazeno: "+ check.getLabel());
-                return;
-            }
+        if (perStartNumber.getText()!=null) {
+        	String text = perStartNumber.getText();
+        	try {
+            stNumber = Integer.parseInt(text);
+        	} catch(NumberFormatException nfe) {
+        		
+        	}
+			if (stNumber != null) {
+				Person check = rmForm.getPerson(stNumber);
+				if (check != null) {
+					JOptionPane.showMessageDialog(rmForm,
+							"Startovní èíslo " + stNumber + " je již pøiøazeno: " + check.getLabel());
+					return;
+				}
+        	}
         }
             
         Person newPer = new Person();
@@ -265,11 +273,11 @@ public class PersonForm extends JPanel {
     
     
     private void updateEdit(Person newPer) {
-        if (maxNumber==0 && perStartNumber.getValue()!=null)
-            maxNumber=(((Number)perStartNumber.getValue()).intValue());
-        
-        maxNumber = Math.max(maxNumber, newPer.getStartNumber());
-        perStartNumber.setValue(maxNumber+1);
+        if (maxNumber==0 && newPer.getStartNumber()!=null)
+            maxNumber=newPer.getStartNumber().intValue();
+        if (newPer.getStartNumber()!=null)
+        	maxNumber = Math.max(maxNumber, newPer.getStartNumber());
+        perStartNumber.setText(Integer.toString(maxNumber+1));
         perName.setText(null);
         perSurname.setText(null);
         perYear.setValue(null);
