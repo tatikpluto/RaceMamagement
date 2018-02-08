@@ -229,6 +229,10 @@ public class CategoryForm extends JPanel {
             newCat.setMaxYear(((Long)catMaxYear.getValue()).intValue());
         
         newCat.setGender((Gender)catGender.getSelectedItem());
+        newCat.setDelka(catDelka.getText());
+        
+        Long l = (Long)catStartTime.getValue();
+        newCat.setStartTime(l==null ? 0 : l);
         
         if (catMinNumber.getValue()!=null)
             newCat.setMinNumber(((Long)catMinNumber.getValue()).intValue());
@@ -236,7 +240,10 @@ public class CategoryForm extends JPanel {
             newCat.setMaxNumber(((Long)catMaxNumber.getValue()).intValue());
         
         newCat.setIntervalovyStart(isInterval.isSelected());
-        newCat.setInterval(((Long)catInterval.getValue()).intValue());
+        if (catInterval.getValue()!=null)
+        	newCat.setInterval(((Long)catInterval.getValue()).intValue());
+        else
+        	newCat.setInterval(null);
         
         rmForm.race.getCategories().add(newCat);
         addRow(newCat);
