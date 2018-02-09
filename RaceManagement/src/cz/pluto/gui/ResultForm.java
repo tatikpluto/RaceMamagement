@@ -103,7 +103,7 @@ public class ResultForm extends JPanel {
                     per.setTime(null);
                     rmForm.race.getResults().remove(selRow);
                     reloadTable();
-                    rmForm.personForm.reloadTable();
+                    rmForm.personForm.reloadTable(null);
                 }
             }
         });

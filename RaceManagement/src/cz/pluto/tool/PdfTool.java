@@ -12,6 +12,7 @@ import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.color.DeviceGray;
+import com.itextpdf.kernel.color.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -50,7 +51,6 @@ public class PdfTool {
         Document document = new Document(pdf, pagesize);
         PdfFont font = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN,PdfEncodings.CP1250);
         PdfFont bold = PdfFontFactory.createFont(FontConstants.TIMES_BOLD, PdfEncodings.CP1250);
-        PdfFont italic = PdfFontFactory.createFont(FontConstants.TIMES_ITALIC, PdfEncodings.CP1250);
         Text title = new Text("Pøihlášení závodníci").setFont(bold).setFontSize(20);
         document.setTopMargin(15f); //odsazeni z hora
         document.add(new Paragraph().add(title).setTextAlignment(TextAlignment.CENTER));
@@ -66,33 +66,39 @@ public class PdfTool {
                 }
             });
             if (!persons.isEmpty()) {
-                Table table = new Table(4);
+                Color manColor = new DeviceRgb(240,248,255);
+                Color womanColor = new DeviceRgb(255,250,250);
+                Table table = new Table(5);
                 //header
                 Cell[] headerFooter = new Cell[] {
-                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(7).add("St. èíslo"),
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(3).add("St. èíslo"),
                         new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).add("Jméno"),
                         new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).add("Klub"),
-                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(5).add("Roèník")
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(8).add("Kategorie"),
+                        new Cell().setFont(bold).setBackgroundColor(new DeviceGray(0.90f)).setTextAlignment(TextAlignment.CENTER).setWidthPercent(3).add("Roèník")
                 };
                 for (Cell hfCell : headerFooter) {
                     table.addHeaderCell(hfCell.setFontSize(9));
                 }
                 float fontSize = 9;
                 for (Person person : persons) {
+                    Color c = person.isWoman() ? womanColor : manColor;
                     // Startovní èíslo
                     Cell sn = new Cell().add(person.getStartNumber()==null ? "" :Integer.toString(person.getStartNumber()));
                     sn.setFont(font).setFontSize(fontSize);
                     sn.setTextAlignment(TextAlignment.RIGHT);
-                    sn.setWidthPercent(7);
+                    sn.setWidthPercent(3);
+                    sn.setBackgroundColor(c);
                     table.addCell(sn);
                     
-                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getLabel()));
-                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getClub()));
-                    table.addCell(new Cell().setTextAlignment(TextAlignment.RIGHT).setFont(font).setFontSize(fontSize).setWidthPercent(5).add(Integer.toString(person.getYear())));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getLabel()).setBackgroundColor(c));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).add(person.getClub()).setBackgroundColor(c));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setFont(font).setFontSize(fontSize).setWidthPercent(8).add(person.getCategoryName()).setBackgroundColor(c));
+                    table.addCell(new Cell().setTextAlignment(TextAlignment.RIGHT).setFont(font).setFontSize(fontSize).setWidthPercent(3).add(Integer.toString(person.getYear())).setBackgroundColor(c));
                 }
                 
                 document.add(table);
-                document.add(new Paragraph().setHeight(6f));
+                document.add(new Paragraph());
             }
             
         document.close();

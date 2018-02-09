@@ -1,6 +1,7 @@
 package cz.pluto.gui;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -62,7 +63,7 @@ public class PersonForm extends JPanel {
         table = new JTable(tableModel);
         createPopupMenu();
         updateColumns();
-        loadTable();
+        loadTable(null);
         table.setSelectionBackground(Color.GREEN.brighter());
         return new JScrollPane(table);
     }
@@ -108,7 +109,7 @@ public class PersonForm extends JPanel {
                 int selRow = table.getSelectedRow();
                 if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
                     rmForm.race.getPersons().remove(selRow);
-                    reloadTable();
+                    reloadTable(null);
                 }
             }
         });
@@ -135,7 +136,7 @@ public class PersonForm extends JPanel {
                     int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete startovní èíslo  "+rmForm.race.getPersons().get(selRow).getLabel()+"!","Pozor", JOptionPane.YES_NO_OPTION);
                     if(dialogResult == JOptionPane.YES_OPTION){
                     rmForm.race.getPersons().get(selRow).setStartNumber(null);
-                    reloadTable();
+                    reloadTable(null);
                     }
                 }
             }
@@ -239,7 +240,7 @@ public class PersonForm extends JPanel {
             newPer.setCategoryName(cat.getName());
         
         rmForm.race.getPersons().add(newPer);
-        reloadTable();
+        reloadTable(newPer);
         updateEdit(newPer);
     }
     
@@ -255,20 +256,29 @@ public class PersonForm extends JPanel {
         return true;
     }
     
-    protected void loadTable() {
+    protected void loadTable(Person lastPer) {
         rmForm.sortPersons();
+        int rowID = -1;
+        int x=0;
         for (Person per : rmForm.race.getPersons()) {
             addRow(per);
             if (per.getStartNumber()!=null)
                 maxNumber = Math.max(maxNumber, per.getStartNumber());
+            if (lastPer!=null && lastPer.getPersonId()==per.getPersonId())
+                rowID = x;
+            x++;
+        }
+        if( rowID !=-1) {
+            table.setRowSelectionInterval(rowID, rowID);
+            table.scrollRectToVisible(new Rectangle(table.getCellRect(rowID, 0, true)));
         }
     }
     
-    public void reloadTable() {
+    public void reloadTable(Person lastPer) {
         createTableModel();
         table.setModel(tableModel);
         updateColumns();
-        loadTable();
+        loadTable(lastPer);
         rmForm.updateTitle();
     }
     
@@ -285,6 +295,7 @@ public class PersonForm extends JPanel {
         perClube.setText(null);
         isWoman.setSelected(false);
         comboCategory.setSelectedItem(null);
+        perName.requestFocusInWindow();
     }
     
     

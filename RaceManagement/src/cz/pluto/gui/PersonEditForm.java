@@ -167,7 +167,7 @@ public class PersonEditForm extends JDialog {
             change = true;
         }
         if (change)
-            masterForm.personForm.reloadTable();
+            masterForm.personForm.reloadTable(person);
         return true;
     }
     

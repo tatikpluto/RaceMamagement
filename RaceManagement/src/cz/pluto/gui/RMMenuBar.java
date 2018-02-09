@@ -20,7 +20,6 @@ import cz.pluto.data.Person;
 import cz.pluto.tool.PdfTool;
 import cz.pluto.tool.XmlTool;
 
-@SuppressWarnings("serial")
 public class RMMenuBar extends JMenuBar {
 
     public RMMenuBar() {
@@ -225,7 +224,7 @@ public class RMMenuBar extends JMenuBar {
         for (Person per : frame.race.getPersons()) {
             per.setTime(null);
         }
-        frame.personForm.reloadTable();
+        frame.personForm.reloadTable(null);
         frame.resultForm.reloadTable();
     }
     
@@ -261,7 +260,7 @@ public class RMMenuBar extends JMenuBar {
             }
         }
         frame.categoryForm.reloadTable();
-        frame.personForm.reloadTable();
+        frame.personForm.reloadTable(null);
     }
     
     
@@ -281,7 +280,7 @@ public class RMMenuBar extends JMenuBar {
                 }
             }
             frame.categoryForm.reloadTable();
-            frame.personForm.reloadTable();
+            frame.personForm.reloadTable(null);
         }
     }
     
