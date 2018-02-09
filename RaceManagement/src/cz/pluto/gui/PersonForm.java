@@ -1,11 +1,14 @@
 package cz.pluto.gui;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -20,9 +23,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -49,6 +57,8 @@ public class PersonForm extends JPanel {
     
     private RMForm rmForm;
     
+    private final int IDCOLUMN = 5;
+    
     public PersonForm(RMForm master) {
         super(new FormLayout( "f:d:g, p", "f:d:g"));
         rmForm = master;
@@ -64,12 +74,39 @@ public class PersonForm extends JPanel {
         createPopupMenu();
         updateColumns();
         loadTable(null);
-        table.setSelectionBackground(Color.GREEN.brighter());
+        table.setSelectionForeground(Color.GREEN.brighter());
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int col = table.columnAtPoint(e.getPoint());
+                if (e.getClickCount() == 2) {
+                    List<RowSorter.SortKey> sortKeys = new ArrayList<>(1);
+                    TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
+                    if ( sorter != null) {
+                        List<RowSorter.SortKey> oldSortKeys = (List<SortKey>) sorter.getSortKeys();
+                        if (oldSortKeys.get(0).getColumn()==col) {
+                            if (oldSortKeys.get(0).getSortOrder()==SortOrder.ASCENDING) 
+                                sortKeys.add(new RowSorter.SortKey(col, SortOrder.DESCENDING)); 
+                            else
+                                sortKeys.add(new RowSorter.SortKey(col, SortOrder.ASCENDING));
+                        }else {
+                            sortKeys.add(new RowSorter.SortKey(col, SortOrder.ASCENDING));
+                        }
+                    }else {
+                        sorter = new TableRowSorter<>(table.getModel());
+                        sortKeys.add(new RowSorter.SortKey(col, SortOrder.ASCENDING));
+                    }
+                    sorter.setSortKeys(sortKeys);
+                    table.setRowSorter(sorter);
+                }
+            }
+        });
+        
         return new JScrollPane(table);
     }
     
     private void createTableModel() {
-        tableModel = new DefaultTableModel(0, 5) {
+        tableModel = new DefaultTableModel(0, 6) {
             @Override
             public boolean isCellEditable(int row, int column){  
                 return false;  
@@ -98,6 +135,10 @@ public class PersonForm extends JPanel {
         tc = columnModel.getColumn(4);
         tc.setIdentifier("category");
         tc.setHeaderValue("Kategorie");
+        
+        tc = columnModel.getColumn(IDCOLUMN);
+        tc.setIdentifier("id");
+        tc.setHeaderValue("ID");
     }
     
     private void createPopupMenu() {
@@ -107,9 +148,15 @@ public class PersonForm extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selRow = table.getSelectedRow();
-                if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
-                    rmForm.race.getPersons().remove(selRow);
-                    reloadTable(null);
+                if (selRow!=-1) {
+                    Object obj = table.getValueAt(selRow, IDCOLUMN);
+                    if (obj!=null && obj instanceof Integer) {
+                        Person p = rmForm.race.getPersonById((Integer)obj);
+                        if (p!=null) {
+                            rmForm.race.getPersons().remove(p);
+                            reloadTable(null);
+                        }
+                    }
                 }
             }
         });
@@ -120,8 +167,14 @@ public class PersonForm extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selRow = table.getSelectedRow();
-                if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
-                    new PersonEditForm(rmForm, rmForm.race.getPersons().get(selRow));
+                if (selRow!=-1) {
+                    Object obj = table.getValueAt(selRow, IDCOLUMN);
+                    if (obj!=null && obj instanceof Integer) {
+                        Person p = rmForm.race.getPersonById((Integer)obj);
+                        if (p!=null) {
+                            new PersonEditForm(rmForm, p);
+                        }
+                    }
                 }
             }
         });
@@ -132,11 +185,14 @@ public class PersonForm extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selRow = table.getSelectedRow();
-                if (selRow!=-1 && selRow<rmForm.race.getPersons().size()) {
-                    int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete startovní èíslo  "+rmForm.race.getPersons().get(selRow).getLabel()+"!","Pozor", JOptionPane.YES_NO_OPTION);
-                    if(dialogResult == JOptionPane.YES_OPTION){
-                    rmForm.race.getPersons().get(selRow).setStartNumber(null);
-                    reloadTable(null);
+                if (selRow!=-1) {
+                    Object obj = table.getValueAt(selRow, IDCOLUMN);
+                    if (obj!=null && obj instanceof Integer) {
+                        Person p = rmForm.race.getPersonById((Integer)obj);
+                        if (p!=null) {
+                            p.setStartNumber(null);
+                            reloadTable(null);
+                        }
                     }
                 }
             }
@@ -252,32 +308,26 @@ public class PersonForm extends JPanel {
         rowData.add(2, newPer.getYear());
         rowData.add(3, newPer.getClub());
         rowData.add(4, newPer.getCategoryName());
+        rowData.add(IDCOLUMN, newPer.getPersonId());
         tableModel.addRow(rowData);
         return true;
     }
     
     protected void loadTable(Person lastPer) {
+        tableModel.setRowCount(0);
         rmForm.sortPersons();
-        int rowID = -1;
-        int x=0;
+
         for (Person per : rmForm.race.getPersons()) {
             addRow(per);
             if (per.getStartNumber()!=null)
                 maxNumber = Math.max(maxNumber, per.getStartNumber());
-            if (lastPer!=null && lastPer.getPersonId()==per.getPersonId())
-                rowID = x;
-            x++;
-        }
-        if( rowID !=-1) {
-            table.setRowSelectionInterval(rowID, rowID);
-            table.scrollRectToVisible(new Rectangle(table.getCellRect(rowID, 0, true)));
         }
     }
     
     public void reloadTable(Person lastPer) {
-        createTableModel();
-        table.setModel(tableModel);
+        /*createTableModel();
         updateColumns();
+        table.setModel(tableModel);*/
         loadTable(lastPer);
         rmForm.updateTitle();
     }

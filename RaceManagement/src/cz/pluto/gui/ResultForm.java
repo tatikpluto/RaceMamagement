@@ -182,6 +182,7 @@ public class ResultForm extends JPanel {
         
         resNumber.setValue(null);
         resTime.setValue(null);
+        resNumber.requestFocusInWindow();
     }
     
     private boolean addRow(Result res, boolean isNew) {

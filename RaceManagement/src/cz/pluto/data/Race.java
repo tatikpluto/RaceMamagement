@@ -72,5 +72,14 @@ public class Race {
     public List<Result> getResults() {
         return results;
     }
-
+    
+    
+    public Person getPersonById(int id) {
+        for (Person p : persons) {
+            if (p.getPersonId()==id)
+                return p;
+        }
+        return null;
+    }
+    
 }
