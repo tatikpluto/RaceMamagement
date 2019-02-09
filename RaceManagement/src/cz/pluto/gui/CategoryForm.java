@@ -1,5 +1,7 @@
 package cz.pluto.gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Duration;
@@ -16,6 +18,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -47,6 +51,21 @@ public class CategoryForm extends JPanel {
     
     private RMForm rmForm;
     
+    public class MyTableCellRenderer extends DefaultTableCellRenderer {
+        public MyTableCellRenderer() {
+            setOpaque(true);
+        }
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if( isSelected ) {
+                cell.setBackground(Color.GREEN.brighter().brighter());
+            }else {
+                cell.setBackground(new Color(213, 212, 225));
+            }
+            return cell;
+        }
+    }
+    
     public CategoryForm(RMForm master) {
         super(new FormLayout( "f:d:g, p", "f:d:g"));
         rmForm = master;
@@ -57,12 +76,15 @@ public class CategoryForm extends JPanel {
     
     
     public JScrollPane createTable() {
-        table = new JTable();
-        reloadTable();
+        createTableModel();
+        table = new JTable(tableModel);
+        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+        table.setDefaultRenderer(Integer.class, new MyTableCellRenderer());
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         createPopupMenu();
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-        return scrollPane;
+        updateColumns();
+        loadTable();
+        return new JScrollPane(table);
     }
     
     private void createTableModel() {
@@ -122,7 +144,6 @@ public class CategoryForm extends JPanel {
                 if (selRow!=-1 && selRow<rmForm.race.getCategories().size()) {
                     rmForm.race.getCategories().remove(selRow);
                     reloadTable();
-                    rmForm.updateTitle();
                 }
             }
         );
@@ -284,16 +305,18 @@ public class CategoryForm extends JPanel {
     }
     
     protected void loadTable() {
+        tableModel.setRowCount(0);
         for (Category category : rmForm.race.getCategories()) {
             addRow(category);
         }
     }
     
     public void reloadTable() {
-        createTableModel();
+        /*createTableModel();
         table.setModel(tableModel);
-        updateColumns();
+        updateColumns();*/
         loadTable();
+        rmForm.updateTitle();
     }
 
 }

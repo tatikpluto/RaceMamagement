@@ -47,6 +47,7 @@ public class XmlTool {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Race.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            //jaxbUnmarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             try {
                 InputStreamReader is = new InputStreamReader(new FileInputStream(file));
                 form.race = (Race) jaxbUnmarshaller.unmarshal(is);

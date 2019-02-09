@@ -1,7 +1,10 @@
 package cz.pluto.gui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -39,7 +43,7 @@ public class ResultForm extends JPanel {
     
     private JTable table;
     private DefaultTableModel tableModel;
-    
+    private static final Color colorSelection = new Color(202, 255, 202);
     private RMForm rmForm;
     
     public ResultForm(RMForm master) {
@@ -117,11 +121,35 @@ public class ResultForm extends JPanel {
         
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 1)); 
         resNumber= new JFormattedTextField(NumberFormat.getIntegerInstance());
+        resNumber.addFocusListener(new FocusListener() {            
+            @Override
+            public void focusGained(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(colorSelection);
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(UIManager.getColor("TextField.background"));
+            }
+        });
         resNumber.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(resNumber, cc.xyw(3, 1, 1));
         
         panel.add(new JLabel("Výsledný èas:"), cc.xy (1, 2)); 
         resTime= new JFormattedTextField(DurationFormat.getHoursInstance());
+        resTime.addFocusListener(new FocusListener() {            
+            @Override
+            public void focusGained(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(colorSelection);
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(UIManager.getColor("TextField.background"));
+            }
+        });
         resTime.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(resTime, cc.xyw(3, 2, 1));
         

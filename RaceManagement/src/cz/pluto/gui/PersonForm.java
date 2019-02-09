@@ -1,11 +1,14 @@
 package cz.pluto.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -26,9 +29,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -49,17 +55,66 @@ public class PersonForm extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
     
-    private JTextField perName;
-    private JTextField perSurname;
-    private JTextField perClube;
+    private MyTextField perName;
+    private MyTextField perSurname;
+    private MyTextField perClube;
     private JCheckBox isWoman;
     private JFormattedTextField perYear;
-    JTextField perStartNumber;
+    protected MyTextField perStartNumber;
     private JComboBox<Category> comboCategory;
     
     private RMForm rmForm;
     
     private final int IDCOLUMN = 5;
+    private static final Color colorWoman = new Color(255, 220, 255);
+    private static final Color colorMan = new Color(207, 227, 255);
+    private static final Color colorSelection = new Color(202, 255, 202);
+    
+    
+    public class MyTextField extends JTextField implements FocusListener {
+        public MyTextField(int columns) {
+            // TODO Auto-generated constructor stub
+            super(columns);
+            addFocusListener(this);
+        }
+        
+        @Override
+        public void focusGained(FocusEvent e) {
+            JTextField txt = (JTextField) e.getComponent();
+            txt.setBackground(colorSelection);
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            JTextField txt = (JTextField) e.getComponent();
+            txt.setBackground(UIManager.getColor("TextField.background"));
+        }
+      }
+    
+    public class MyTableCellRenderer extends DefaultTableCellRenderer {
+        public MyTableCellRenderer() {
+            setOpaque(true);
+        }
+        
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if( isSelected ) {
+                cell.setBackground(Color.GREEN.brighter().brighter());
+            } else {
+                Object obj = table.getValueAt(row, IDCOLUMN);
+                if (obj!=null && obj instanceof Integer) {
+                    Person p = rmForm.race.getPersonById((Integer)obj);
+                    if (p!=null && p.isWoman()) {
+                        cell.setBackground(colorWoman);
+                    }else {
+                        cell.setBackground(colorMan);
+                    }
+                }            
+            }
+            return cell;
+        }
+    }
+    
     
     public PersonForm(RMForm master) {
         super(new FormLayout( "f:d:g, p", "f:d:g"));
@@ -73,10 +128,12 @@ public class PersonForm extends JPanel {
     public JScrollPane createTable() {
         createTableModel();
         table = new JTable(tableModel);
+        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+        table.setDefaultRenderer(Integer.class, new MyTableCellRenderer());
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         createPopupMenu();
         updateColumns();
         loadTable(null);
-        table.setSelectionForeground(Color.GREEN.brighter());
         table.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -112,6 +169,13 @@ public class PersonForm extends JPanel {
             @Override
             public boolean isCellEditable(int row, int column){  
                 return false;  
+            }
+            @Override
+            public Class getColumnClass(int c) {
+                if (c==0 || c== 2 || c==IDCOLUMN)
+                    return Integer.class;
+                else
+                    return String.class;
             }
         };
     }
@@ -223,19 +287,31 @@ public class PersonForm extends JPanel {
     }
     
     public JPanel createRightPanel() {
-        JPanel panel = new JPanel(new FormLayout( "p, 2dlu, p", "p,p,p,p,p,p,p,p,f:d:g"));
+        JPanel panel = new JPanel(new FormLayout( "p, 2dlu, p", "p,p,p,p,p,p,p,p,p,f:d:g"));
         CellConstraints cc = new CellConstraints();
         
         panel.add(new JLabel("Jméno:"), cc.xy (1, 1)); 
-        perName = new JTextField(30);
+        perName = new MyTextField(30);
         panel.add(perName, cc.xyw(3, 1, 1)); 
         
         panel.add(new JLabel("Pøíjmení:"), cc.xy (1, 2)); 
-        perSurname= new JTextField(30);
+        perSurname= new MyTextField(30);
         panel.add(perSurname, cc.xyw(3, 2, 1));
         
         panel.add(new JLabel("Roèník:"), cc.xy (1, 3)); 
         perYear= new JFormattedTextField(NumberFormat.getIntegerInstance());
+        perYear.addFocusListener(new FocusListener() {            
+            @Override
+            public void focusGained(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(colorSelection);
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                JTextField txt = (JFormattedTextField) e.getComponent();
+                txt.setBackground(UIManager.getColor("TextField.background"));
+            }
+        });
         perYear.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(perYear, cc.xyw(3, 3, 1));
         
@@ -244,7 +320,7 @@ public class PersonForm extends JPanel {
         panel.add(isWoman, cc.xyw(3, 4, 1));
         
         panel.add(new JLabel("Klub:"), cc.xy (1, 5)); 
-        perClube= new JTextField(30);
+        perClube= new MyTextField(30);
         panel.add(perClube, cc.xyw(3, 5, 1));
         
         DecimalFormat stCislaFormat = (DecimalFormat)NumberFormat.getNumberInstance();
@@ -252,7 +328,7 @@ public class PersonForm extends JPanel {
         stCislaFormat.setMaximumIntegerDigits(3);
         
         panel.add(new JLabel("Startovní èíslo:"), cc.xy (1, 6)); 
-        perStartNumber= new JTextField(30);
+        perStartNumber= new MyTextField(30);
         perStartNumber.setHorizontalAlignment(JTextField.RIGHT);
         panel.add(perStartNumber, cc.xyw(3, 6, 1));
         
@@ -261,8 +337,10 @@ public class PersonForm extends JPanel {
         comboCategory.setEditable(false);
         panel.add(comboCategory, cc.xyw(3, 7, 1));
         
+        panel.add(new JPanel(), cc.xyw(1, 8, 3));
+        
         JButton addButton = new JButton("Vytvoøit závodníka");
-        panel.add(addButton, cc.xyw(1, 8, 3));
+        panel.add(addButton, cc.xyw(1, 9, 3));
         
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -320,9 +398,8 @@ public class PersonForm extends JPanel {
         updateEdit(newPer);
     }
     
-    private boolean addRow(Person newPer) {
-        Vector<Object> rowData = new Vector<>(5);
-        
+    private void addRow(Person newPer) {
+        Vector<Object> rowData = new Vector<>(5);        
         rowData.add(0, newPer.getStartNumber());
         rowData.add(1, newPer.getLabel());
         rowData.add(2, newPer.getYear());
@@ -330,7 +407,6 @@ public class PersonForm extends JPanel {
         rowData.add(4, newPer.getCategoryName());
         rowData.add(IDCOLUMN, newPer.getPersonId());
         tableModel.addRow(rowData);
-        return true;
     }
     
     protected void loadTable(Person lastPer) {
