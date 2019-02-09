@@ -1,6 +1,9 @@
 package cz.pluto.gui;
 
 import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -39,7 +42,6 @@ import cz.pluto.data.Category;
 import cz.pluto.data.Person;
 
 
-@SuppressWarnings("serial")
 public class PersonForm extends JPanel {
     
     static int maxNumber = 0;
@@ -198,6 +200,24 @@ public class PersonForm extends JPanel {
             }
         });
         tableMenu.add(deleteSt);
+        
+        JMenuItem copyValue = new JMenuItem("Zkopírovat hodnotu");
+        copyValue.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selRow = table.getSelectedRow();
+                int selCol = table.getSelectedColumn();
+                if (selRow!=-1) {
+                    Object obj = table.getValueAt(selRow, selCol);
+                    if (obj!=null) {
+                    	StringSelection select = new StringSelection(obj.toString());
+                        Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clipBoard.setContents(select, null);
+                    }
+                }
+            }
+        });
+        tableMenu.add(copyValue);
         
         table.setComponentPopupMenu(tableMenu);
     }

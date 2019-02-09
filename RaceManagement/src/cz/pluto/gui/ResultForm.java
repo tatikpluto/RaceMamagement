@@ -101,7 +101,7 @@ public class ResultForm extends JPanel {
                     Result res = rmForm.race.getResults().get(selRow);
                     Person per = rmForm.getPerson(res.getStartNumber());
                     per.setTime(null);
-                    rmForm.race.getResults().remove(selRow);
+                    rmForm.race.getResults().remove(res);
                     reloadTable();
                     rmForm.personForm.reloadTable(null);
                 }

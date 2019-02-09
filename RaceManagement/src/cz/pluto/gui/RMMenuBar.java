@@ -5,6 +5,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -17,6 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import cz.pluto.data.Category;
 import cz.pluto.data.Gender;
 import cz.pluto.data.Person;
+import cz.pluto.data.Result;
 import cz.pluto.tool.PdfTool;
 import cz.pluto.tool.XmlTool;
 
@@ -127,8 +133,8 @@ public class RMMenuBar extends JMenuBar {
         JMenu actionMenu = new JMenu("Akce");
         add(actionMenu);
         
-        //Set up the open menu item.
-        menuItem = new JMenuItem("Sazat všechny výsledky");
+        //Set up the remove results menu item.
+        menuItem = new JMenuItem("Smazat všechny výsledky");
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -140,7 +146,20 @@ public class RMMenuBar extends JMenuBar {
         });
         actionMenu.add(menuItem);
         
-        //Set up the open menu item.
+        //Set up the remove persons menu item.
+        menuItem = new JMenuItem("Smazat všechny závodníky");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete vymazat všechny závodníky?","Pozor", JOptionPane.YES_NO_OPTION);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                    erasePersons();
+                }
+            }
+        });
+        actionMenu.add(menuItem);
+        
+        //Set up the split menu item.
         menuItem = new JMenuItem("Rozdìlit kategori podle pohlaví");
         menuItem.addActionListener(new ActionListener() {
             @Override
@@ -153,7 +172,7 @@ public class RMMenuBar extends JMenuBar {
         });
         actionMenu.add(menuItem);
         
-        //Set up the open menu item.
+        //Set up the join menu item.
         menuItem = new JMenuItem("Slouèit Benjamínky do jedné");
         menuItem.addActionListener(new ActionListener() {
             @Override
@@ -161,6 +180,32 @@ public class RMMenuBar extends JMenuBar {
                 int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete slouèit Benjamínky do jedné kategorie?","Pozor", JOptionPane.YES_NO_OPTION);
                 if(dialogResult == JOptionPane.YES_OPTION){
                     mergeCategory("Benjamínci");
+                }
+            }
+        });
+        actionMenu.add(menuItem);
+        
+        //Set up the recalculate menu item.
+        menuItem = new JMenuItem("Pøepoèíst výsledky");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete pøepoèíst výsledky?","Pozor", JOptionPane.YES_NO_OPTION);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                	prepocistVysledky();
+                }
+            }
+        });
+        actionMenu.add(menuItem);
+        
+        //Set up the set start numbers menu item.
+        menuItem = new JMenuItem("Pøiøaï startovní èísla.");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Opravdu chcete pøiøadit startovní èísla?","Pozor", JOptionPane.YES_NO_OPTION);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                	priradStartovniCisla();
                 }
             }
         });
@@ -228,6 +273,16 @@ public class RMMenuBar extends JMenuBar {
         frame.resultForm.reloadTable();
     }
     
+    public void erasePersons() {
+        RMForm frame =  (RMForm)RM.desktop.getSelectedFrame();
+        if (frame == null)
+            return;
+        frame.race.getResults().clear();
+        frame.race.getPersons().clear();
+        frame.personForm.reloadTable(null);
+        frame.resultForm.reloadTable();
+    }
+    
     public void splitCategory(String catName) {
         RMForm frame =  (RMForm)RM.desktop.getSelectedFrame();
         if (frame == null)
@@ -291,7 +346,40 @@ public class RMMenuBar extends JMenuBar {
         
         for (Person per : frame.race.getPersons()) {
             per.setTime(null);
+            if (per.getStartNumber()!=null) {
+              Result res = frame.getResult(per.getStartNumber());
+              if (res != null) {
+            	  Category cat = frame.getCategory(per.getCategoryName());
+                  per.setTime(res.getTime()-cat.getStartTime());
+              }
+            }
         }
-        
+    }
+    
+    public void priradStartovniCisla() {
+    	RMForm frame =  (RMForm)RM.desktop.getSelectedFrame();
+        if (frame == null)
+            return;
+        List<Person> todo = new ArrayList<Person>();
+        for (Person per : frame.race.getPersons()) {
+        	if (per.getStartNumber()==null)
+        		todo.add(per);
+        }
+        Collator col = Collator.getInstance();
+        Collections.sort(todo, new Comparator<Person>() {
+            public int compare(Person p1, Person p2) {
+                if (!col.equals(p1.getClub(), p2.getClub()))
+                    return col.compare(p1.getClub(), p2.getClub());
+                else {
+                    return col.compare(p1.getLabel(), p2.getLabel());
+                }
+            }
+        });
+        int lastStartNumber = PersonForm.maxNumber+1;
+        for (Person per : todo) {
+        	per.setStartNumber(lastStartNumber++);
+        }
+        PersonForm.maxNumber = lastStartNumber;
+        frame.personForm.reloadTable(null);
     }
 }

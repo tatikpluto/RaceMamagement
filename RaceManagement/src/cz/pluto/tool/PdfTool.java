@@ -2,6 +2,7 @@ package cz.pluto.tool;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.Collator;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,12 +57,13 @@ public class PdfTool {
         document.add(new Paragraph().add(title).setTextAlignment(TextAlignment.CENTER));
 
             List<Person> persons = new ArrayList<>(race.getPersons());
+            Collator col = Collator.getInstance();
             Collections.sort(persons, new Comparator<Person>() {
                 public int compare(Person p1, Person p2) {
-                    if (!p1.getClub().equalsIgnoreCase(p2.getClub()))
-                        return p1.getClub().compareTo(p2.getClub());
+                    if (!col.equals(p1.getClub(), p2.getClub()))
+                        return col.compare(p1.getClub(), p2.getClub());
                     else {
-                        return p1.getLabel().compareTo(p1.getLabel());
+                        return col.compare(p1.getLabel(), p2.getLabel());
                     }
                 }
             });
@@ -185,7 +187,7 @@ public class PdfTool {
         PdfFont bold = PdfFontFactory.createFont(FontConstants.TIMES_BOLD, PdfEncodings.CP1250);
         PdfFont italic = PdfFontFactory.createFont(FontConstants.TIMES_ITALIC, PdfEncodings.CP1250);
         Text title = new Text(race.getName()).setFont(italic).setFontSize(16);
-        Text place = new Text(race.getPlace()).setFont(italic).setFontSize(16);
+        Text place = new Text(race.getPlace()).setFont(italic).setFontSize(14);
         Text vysl = new Text("Výsledková listina").setFont(bold).setFontSize(20);
         
         SolidLine line = new SolidLine(1f);
@@ -195,8 +197,8 @@ public class PdfTool {
         
         document.setTopMargin(15f); //odsazeni z hora
         document.add(ls);
-        document.add(new Paragraph().add(place).setTextAlignment(TextAlignment.LEFT));
-        document.add(new Paragraph().add(title).setTextAlignment(TextAlignment.LEFT).setMarginTop(-8f));
+        document.add(new Paragraph().add(title).setTextAlignment(TextAlignment.LEFT));
+        document.add(new Paragraph().add(place).setTextAlignment(TextAlignment.LEFT).setMarginTop(-8f));
         document.add(new Paragraph().add(vysl).setTextAlignment(TextAlignment.LEFT).setMarginTop(-8f));
         document.add(ls);
         
